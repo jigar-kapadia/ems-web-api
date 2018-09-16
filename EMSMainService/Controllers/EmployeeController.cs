@@ -44,7 +44,7 @@ namespace EMSMainService.Controllers
                     emp.Phone = item.Phone;
                     list.Add(emp);
                 }
-                return Request.CreateResponse((employees != null && employees.Count > 0) ? HttpStatusCode.OK : HttpStatusCode.NoContent, list.OrderByDescending(x=>x.Id));
+                return Request.CreateResponse((employees != null && employees.Count > 0) ? HttpStatusCode.OK : HttpStatusCode.NoContent, list.OrderByDescending(x => x.Id));
             }
             catch (Exception ex)
             {
@@ -71,13 +71,13 @@ namespace EMSMainService.Controllers
                 command.Parameters.AddWithValue("@StateId", employee.StateId);
                 command.Parameters.AddWithValue("@CityId", employee.CityId);
                 command.Parameters.AddWithValue("@DepartmentId", employee.DepartmentId);
-                command.Parameters.AddWithValue("@DateOfBirth", employee.DateOfBirth);
-                command.Parameters.AddWithValue("@DateofJoining", employee.DateOfJoining);
+                command.Parameters.AddWithValue("@DateOfBirth", Convert.ToDateTime(employee.DateOfBirth.ToString("yyyy-MM-dd")));
+                command.Parameters.AddWithValue("@DateofJoining", Convert.ToDateTime(employee.DateOfJoining.ToString("yyyy-MM-dd")));
                 command.Parameters.AddWithValue("@IsActive", employee.IsActive);
                 command.Parameters.AddWithValue("@RoleType", employee.RoleType);
-                int result = command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
 
-                return Request.CreateResponse((result > 0) ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
@@ -116,7 +116,12 @@ namespace EMSMainService.Controllers
                         DateOfJoining = employees.DateOfJoining,
                         IsActive = employees.IsActive,
                         Role = employees.RoleMaster.Name,
-                        Phone = employees.Phone
+                        Phone = employees.Phone,
+                        CountryId = employees.CountryId,
+                        StateId = employees.StateId,
+                        CityId = employees.CityId,
+                        DepartmentId = employees.DepartmentId,
+                        RoleType = employees.RoleType
                     };
                     return Request.CreateResponse(HttpStatusCode.OK, employee);
                     //   return Request.CreateResponse(HttpStatusCode.NoContent);
@@ -244,6 +249,11 @@ namespace EMSMainService.Controllers
         public System.DateTime DateOfJoining { get; set; }
         public bool IsActive { get; set; }
         public string Role { get; set; }
+        public int CountryId { get; set; }
+        public int StateId { get; set; }
+        public int CityId { get; set; }
+        public int DepartmentId { get; set; }
+        public int RoleType { get; set; }
     }
 
     public class StateModel

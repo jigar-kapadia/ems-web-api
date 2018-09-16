@@ -44,7 +44,7 @@ namespace EMSMainService.Controllers
                     emp.Phone = item.Phone;
                     list.Add(emp);
                 }
-                return Request.CreateResponse((employees != null && employees.Count > 0) ? HttpStatusCode.OK : HttpStatusCode.NoContent, list.OrderByDescending(x => x.Id));
+                return Request.CreateResponse((employees != null && employees.Count > 0) ? HttpStatusCode.OK : HttpStatusCode.NoContent, list.OrderByDescending(x=>x.Id));
             }
             catch (Exception ex)
             {
@@ -52,14 +52,13 @@ namespace EMSMainService.Controllers
             }
         }
 
-        [Route("api/employee/create")]
+        [Route("api/create")]
         [HttpPost]
         public HttpResponseMessage CreateEmployee(Employee employee)
         {
             try
             {
                 var connection = new SqlConnection("Data Source=JIGAR-PC;Initial Catalog=EmployeeDb;Integrated Security=True");
-                connection.Open();
                 var command = new SqlCommand("InsertUpdateEmployee", connection);
                 command.CommandType = System.Data.CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@Id", employee.Id);
@@ -72,13 +71,12 @@ namespace EMSMainService.Controllers
                 command.Parameters.AddWithValue("@StateId", employee.StateId);
                 command.Parameters.AddWithValue("@CityId", employee.CityId);
                 command.Parameters.AddWithValue("@DepartmentId", employee.DepartmentId);
-                command.Parameters.AddWithValue("@DateOfBirth", Convert.ToDateTime(employee.DateOfBirth.ToString("yyyy-MM-dd")));
-                command.Parameters.AddWithValue("@DateofJoining", Convert.ToDateTime(employee.DateOfJoining.ToString("yyyy-MM-dd")));
+                command.Parameters.AddWithValue("@DateOfBirth", employee.DateOfBirth);
+                command.Parameters.AddWithValue("@DateofJoining", employee.DateOfJoining);
                 command.Parameters.AddWithValue("@IsActive", employee.IsActive);
                 command.Parameters.AddWithValue("@RoleType", employee.RoleType);
-                command.ExecuteNonQuery();
-                connection.Close();
-                return Request.CreateResponse(HttpStatusCode.OK);
+                int result = command.ExecuteNonQuery();
+                return Request.CreateResponse((result > 0) ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
             }
             catch (Exception ex)
             {
@@ -110,11 +108,6 @@ namespace EMSMainService.Controllers
                         Email = employees.Email,
                         Gender = employees.Gender,
                         Country = employees.Country.Name,
-                        CountryId = employees.CountryId,
-                        StateId = employees.StateId,
-                        CityId = employees.CityId,
-                        DepartmentId = employees.DepartmentId,
-                        RoleType = employees.RoleType,
                         State = employees.State.Name,
                         City = employees.City.Name,
                         Department = employees.Department.Name,
@@ -250,11 +243,6 @@ namespace EMSMainService.Controllers
         public System.DateTime DateOfJoining { get; set; }
         public bool IsActive { get; set; }
         public string Role { get; set; }
-        public int CountryId { get; set; }
-        public int StateId { get; set; }
-        public int CityId { get; set; }
-        public int DepartmentId { get; set; }
-        public int RoleType { get; set; }
     }
 
     public class StateModel

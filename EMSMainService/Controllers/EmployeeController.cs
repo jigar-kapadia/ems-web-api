@@ -76,6 +76,7 @@ namespace EMSMainService.Controllers
                 command.Parameters.AddWithValue("@IsActive", employee.IsActive);
                 command.Parameters.AddWithValue("@RoleType", employee.RoleType);
                 int result = command.ExecuteNonQuery();
+
                 return Request.CreateResponse((result > 0) ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
             }
             catch (Exception ex)
